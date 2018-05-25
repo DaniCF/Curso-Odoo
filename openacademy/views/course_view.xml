@@ -109,8 +109,10 @@
 					<group>
 						<field name="start_date"/>
 						<field name="duration"/>
+						<field name="hours"/>
 						<field name="end_date"/>
-						<field name="seats"/>
+						<field name="seats" on_change="_onchange_taken_seats(seats.attende_ids)"/>
+						<field name='attende_count'/>
 						<field name="instructor_id"/>
 						<field name="course_id"/>
 						<field name="taken_seats_percent" widget='progressbar'/>
@@ -162,7 +164,29 @@
 
    <menuitem name="session" id="session_menu" parent="openacademy_menu" action="session_list_action"/>
 
+   <record id="view_openacademy_session_gantt" model="ir.ui.view">
+		<field name="name">view.openacademy.session.gantt</field>
+		<field name="model">openacademy.session</field>
+		<field name="arch" type="xml">
+			<gantt string="Session Gantt" color= "course_id"
+				date_start="start_date" date_delay="hours">
+				<level object="res.partner" link="instructor_id">
+					<field name="name"/>
+				</level>
+			</gantt>
+		</field>
+	</record>
 
+	<record id="view_openacademy_session_graph" model="ir.ui.view">
+		<field name="name">view.openacademy.session.graph</field>
+		<field name="model">openacademy.session</field>
+		<field name="arch" type="xml">
+			<graph string="Asistentes por Session" type="bar">
+				<field name="course_id"/>
+				<field name="attende_count" operator="+"/>
+			</graph>
+		</field>
+	</record>
 
    
 </data>

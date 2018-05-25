@@ -60,6 +60,13 @@ class openacademy_session(models.Model):
 				duration=end_date-start_date
 				session.duration=duration.days+1
 
+	def _set_hours(self):
+		for session in self:
+			if session.hours:
+				session.duration=session.hours / 8
+
+	
+
 	@api.multi
 	def action_draft(self):
 		return self.write({'state':'draft'})
@@ -87,6 +94,39 @@ class openacademy_session(models.Model):
 				raise ValidationError(('El instructor no puede ser asistente'))
 			return True
 
+	@api.one
+	@api.depends('duration')
+	def _determin_hour_from_duration(self):
+		for session in self:
+			if session.duration:
+				session.hours=session.duration * 8
+			else:
+				session.hours=0
+
+	@api.one
+	@api.depends('attendee_count')
+	def _get_attendee_count(self):
+		for session in self:
+			session.attendee_count=len(session.attendee_ids)
+
+	@api.multi
+   @api.onchange('seats','attendee_ids')
+   def _onchange_taken_seats(self, seats, attendee_ids):
+       print seats, "asientos"
+       print attendee_ids[0][2],"asisistenes"
+       if seats < len(attendee_ids[0][2]):
+           warning={
+               'title':('Warning'),
+               'message':('No puedes tener mas asistentes que asientos'),
+           }
+           return {'warning':warning}
+       if seats > 0:
+           percent=(100 * len(attendee_ids[0][2])) / seats
+           print percent,"porcentajeeeeeee"
+           #~ self.taken_seats_percent=percent
+           return {'value': {'taken_seats_percent':percent}}
+
+
 	name = fields.Char('Nombre', required=True)
 	start_date = fields.Date('Fecha Inicio')
 	duration = fields.Integer('Duracion')
@@ -97,8 +137,11 @@ class openacademy_session(models.Model):
 	taken_seats_percent = fields.Float(string='Porcentaje Asistencia', compute='_take_seats_percent')
 	end_date = fields.Date(string='Fecha final', compute='_determin_end_date', inverse='_set_end_date')
 	state = fields.Selection([('draft', 'Borrador'), ('confirm', 'Confirmado'),('done', 'Listo'), ('cancel', 'Cancel')], string="Estado", default="draft")
+	hours = fields.Float(string='Horas', compute='_determin_hour_from_duration', store=True)
+	attendee_count = fields.Integer(string='Num Asistentes', compute='_get_attendee_count', store=True)
 
 	_contraints=[(_check_instructor_not_attendees, "El instructor no puede ser asistente", ['instructor_id', 'attendee_ids'])]
+
 
 
 class openacademy_attendee(models.Model):
