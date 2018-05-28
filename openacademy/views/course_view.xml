@@ -49,7 +49,7 @@
 
 
 	<record id="view_openacademy_course_tree" model="ir.ui.view">
-		<field name="name">view.openacademy.course.form</field>
+		<field name="name">view.openacademy.course.tree</field>
 		<field name="model">openacademy.course</field>
 		<field name="arch" type="xml">
 			<tree string="Cursos">
@@ -75,7 +75,7 @@
        <field name="res_model">openacademy.course</field>
        <field name="view_type">form</field>
        <field name="view_mode">tree,form</field>
-       <field name="context">{"search_default_my_courses"}</field>
+       <field name="context">{"search_default_my_courses": uid}</field>
        <field name="help" type="html"><p class="oe_view_nocontent_create">Create the first course</p>
        </field>
    </record>
@@ -89,8 +89,8 @@
 -->
 
 	<record id="view_openacademy_session_form" model="ir.ui.view">
-		<field name="name">view.openacademy.course.form</field>
-		<field name="model">openacademy.course</field>
+		<field name="name">view.openacademy.session.form</field>
+		<field name="model">openacademy.session</field>
 		<field name="arch" type="xml">
 			<form string="Sesiones">
 				<header>
@@ -111,25 +111,32 @@
 						<field name="duration"/>
 						<field name="hours"/>
 						<field name="end_date"/>
-						<field name="seats" on_change="_onchange_taken_seats(seats.attende_ids)"/>
-						<field name='attende_count'/>
+						<field name="seats" on_change="_onchange_taken_seats(seats, attendee_ids)"/>
+						<field name='attendee_count'/>
 						<field name="instructor_id"/>
 						<field name="course_id"/>
 						<field name="taken_seats_percent" widget='progressbar'/>
 					</group>
+					<sepeator string="Asistentes"/>
+                   	<field name="attendee_ids" >
+                       <tree string="Asistentes" editable="bottom">
+                           <field name="partner_id"/>
+                       </tree>
+                   </field>
 				</sheet>
 			</form>
 		</field>
+	</record>
 
 	<record id="view_openacademy_session_tree" model="ir.ui.view">
-		<field name="name">view.openacademy.session.form</field>
+		<field name="name">view.openacademy.session.tree</field>
 		<field name="model">openacademy.session</field>
 		<field name="arch" type="xml">
 			<tree string="Sesiones" colors='blue:duration&lt;5;red:duration&gt;15'>
 				<field name="name"/>
 				<field name="start_date"/>
 				<field name="end_date"/>
-				<field name="duration_date"/>
+				<field name="duration"/>
 				<field name="seats"/>
 				<field name="taken_seats_percent" widget="progressbar"/>
 			</tree>
@@ -138,7 +145,7 @@
 
 
 	<record id="view_openacademy_session_calendar" model="ir.ui.view">
-		<field name="name">view.openacademy.session.tree</field>
+		<field name="name">view.openacademy.session.calendar</field>
 		<field name="model">openacademy.session</field>
 		<field name="arch" type="xml">
 			<calendar string="Sesiones"
@@ -183,7 +190,7 @@
 		<field name="arch" type="xml">
 			<graph string="Asistentes por Session" type="bar">
 				<field name="course_id"/>
-				<field name="attende_count" operator="+"/>
+				<field name="attendee_count" operator="+"/>
 			</graph>
 		</field>
 	</record>

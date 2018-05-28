@@ -4,6 +4,6 @@
 from openerp import api, fields, models
 
 class res_partner(models.Model):
-	_inherit='res_partner'
+	_inherit='res.partner'
 
-	instructor = fields.Boolean('Es Instructor', 'default'=False)
+	instructor = fields.Boolean('Es Instructor', default=False)

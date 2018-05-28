@@ -6,7 +6,7 @@
 	<record id="view_partner_instructor_form" model="ir.ui.view">
 		<field name="name">view.partner.instructor.form</field>
 		<field name="model">res.partner</field>
-		<field name="inherit_id" ref="base.view_partner_instructor_form"/>
+		<field name="inherit_id" ref="base.view_partner_form"/>
 		<field name="arch" type="xml">
 			<field name="name" position="after">
 				<field name="instructor" />
