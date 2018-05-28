@@ -28,6 +28,7 @@ class openacademy_course(models.Model):
 
 
 class openacademy_session(models.Model):
+
 	__name='openacademy.session'
 
 
@@ -110,28 +111,28 @@ class openacademy_session(models.Model):
 			session.attendee_count=len(session.attendee_ids)
 
 	@api.multi
-   @api.onchange('seats','attendee_ids')
-   def _onchange_taken_seats(self, seats, attendee_ids):
-       print seats, "asientos"
-       print attendee_ids[0][2],"asisistenes"
-       if seats < len(attendee_ids[0][2]):
-           warning={
-               'title':('Warning'),
-               'message':('No puedes tener mas asistentes que asientos'),
-           }
-           return {'warning':warning}
-       if seats > 0:
-           percent=(100 * len(attendee_ids[0][2])) / seats
-           print percent,"porcentajeeeeeee"
-           #~ self.taken_seats_percent=percent
-           return {'value': {'taken_seats_percent':percent}}
+    @api.onchange('seats','attendee_ids')
+    def _onchange_taken_seats(self, seats, attendee_ids):
+        print seats, "asientos"
+        print attendee_ids[0][2],"asisistenes"
+        if seats < len(attendee_ids[0][2]):
+            warning={
+                'title':('Warning'),
+                'message':('No puedes tener mas asistentes que asientos'),
+            }
+            return {'warning':warning}
+        if seats > 0:
+            percent=(100 * len(attendee_ids[0][2])) / seats
+            print percent,"porcentajeeeeeee"
+            #~ self.taken_seats_percent=percent
+            return {'value': {'taken_seats_percent':percent}}
 
 
 	name = fields.Char('Nombre', required=True)
 	start_date = fields.Date('Fecha Inicio')
 	duration = fields.Integer('Duracion')
 	seats = fields.Integer("Num Asientos")
-	instructor_id = fields.Many2one("res.partner", "Instructor", domain=['|'('instructor','=', True), ('category_id.name', 'ilike', 'Profesor')]
+	instructor_id = fields.Many2one("res.partner", "Instructor", domain=['|'('instructor','=', True), ('category_id.name', 'ilike', 'Profesor')])
 	course_id = fields.Many2one("openacademy.course", "Cursos", ondelete="cascade")
 	attendee_ids = fields.One2many('openacademy.attendee', 'session_id', 'Asistentes')
 	taken_seats_percent = fields.Float(string='Porcentaje Asistencia', compute='_take_seats_percent')
@@ -140,11 +141,12 @@ class openacademy_session(models.Model):
 	hours = fields.Float(string='Horas', compute='_determin_hour_from_duration', store=True)
 	attendee_count = fields.Integer(string='Num Asistentes', compute='_get_attendee_count', store=True)
 
-	_contraints=[(_check_instructor_not_attendees, "El instructor no puede ser asistente", ['instructor_id', 'attendee_ids'])]
+	_contraints = [(_check_instructor_not_attendees, "El instructor no puede ser asistente", ['instructor_id', 'attendee_ids'])]
 
 
 
 class openacademy_attendee(models.Model):
+
 	_name='openacademy.attendee'
 
 	_rec_name='partner_id'
