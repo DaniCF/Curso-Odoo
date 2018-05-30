@@ -19,10 +19,23 @@ class openacademy_course(models.Model):
         default['name']=new_name
         return super(openacademy_course, self).copy(default)
 
+    @api.one
+    @api.depends('session_ids')
+    def _get_total_cost(self):
+        for course in self:
+            total = 0
+            for session in course.session_ids:
+                total += session.course_cost
+            course.total_cost = total
+
+
+
+
     name = fields.Char('Nombre', required=True)
     description = fields.Text('Descripción')
     responsible_id = fields.Many2one("res.partner", "Responsable")
     session_ids = fields.One2many("openacademy.session","course_id", "Sesiones")
+    total_cost = fields.Float(string="Coste total", compute="_get_total_cost")
 
     _sql_constraints=[('name_unique', 'UNIQUE (name)','El nombre debe ser unico'), ('name_description_check', 'CHECK (name <> description)','El nombre y la descripcion deben ser diferentes'),]
 
@@ -77,7 +90,7 @@ class openacademy_session(models.Model):
         return self.write({'state':'cancel'})
 
     @api.multi
-    def action_(self):
+    def action_confirm(self):
         return self.write({'state':'confirm'})
 
     @api.multi
@@ -129,6 +142,14 @@ class openacademy_session(models.Model):
                 return {'value': {'taken_seats_percent':percent}}
         else:
             return {'value': {'taken_seats_percent':0}}
+
+    @api.one
+    def unlink(self):
+        for session in self:
+            if session.state in ('confirm', 'done'):
+                raise ValidationError(('No puedes eliminar una sesion en estado confirmado'))
+            else:
+                return super(openacademy_session, self).unlink()
 
     name = fields.Char('Nombre', required=True)
     start_date = fields.Date('Fecha Inicio')

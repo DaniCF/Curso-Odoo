@@ -15,8 +15,10 @@
 					</h1>
 						<notebook>
 							<page string="Información">
-								<label for ="responsible_id"/>
-								<field name="responsible_id"/>
+								<group>
+									<field name="responsible_id"/>
+									<field name="total_cost"/>
+								</group>
 							</page>
 							<page string="Sesiones">
 								<field name="session_ids">
@@ -32,6 +34,7 @@
 									<tree string="Sesiones">
 										<field name="name"/>
 										<field name="start_date"/>
+										<field name="course_cost"/>
 									</tree>
 								</field>									
 							</page>
@@ -116,6 +119,8 @@
 						<field name="instructor_id"/>
 						<field name="course_id"/>
 						<field name="taken_seats_percent" widget='progressbar'/>
+						<field name="course_tipe"/>
+						<field name="course_cost"/>
 					</group>
 					<sepeator string="Asistentes"/>
                    	<field name="attendee_ids" >
